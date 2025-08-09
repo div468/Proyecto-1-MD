@@ -86,3 +86,80 @@ def equivalentes(expr1, expr2):
 
 def inferencia(expr):
     pass
+
+############## FUNCIONES AUXILIARES ##############
+
+def evaluar_expresion(expr, asignaciones):
+    """
+    Evalúa una expresión lógica con asignaciones de variables dadas.
+    
+    Args:
+        expr (str): Expresión lógica
+        asignaciones (dict): Diccionario variable -> valor booleano
+        
+    Returns:
+        bool: Resultado de evaluar la expresión
+    """
+    pass
+
+def procesar_tabla_verdad():
+    #Procesa la opción de tabla de verdad.
+    pass
+
+def procesar_tautologia():
+    #Procesa la opción de verificar tautología.
+    pass
+
+def procesar_equivalencias():
+    #Procesa la opción de verificar equivalencias.
+    pass
+
+def procesar_inferencia():
+    #Procesa la opción de realizar inferencia.
+    pass
+
+def mostrar_menu():
+    # Muestra el menú principal del programa.
+    print("\n--- Calculadora de Lógica Proposicional ---")
+    print("1. Tabla de verdad")
+    print("2. Verificar tautología")
+    print("3. Verificar equivalencias")
+    print("4. Realizar inferencia")
+    print("5. Finalizar")
+    print("=" * 45)
+
+
+def main():
+    """Función principal del programa con interfaz de usuario."""
+    continuar = True
+    
+    # Diccionario para simular switch-case
+    opciones = {
+        '1': procesar_tabla_verdad,
+        '2': procesar_tautologia,
+        '3': procesar_equivalencias,
+        '4': procesar_inferencia
+    }
+    
+    while continuar:
+        mostrar_menu()
+        
+        try:
+            opcion = input("Seleccione una opción (1-5): ").strip()
+            
+            if opcion in opciones:
+                # Ejecutar la función correspondiente
+                opciones[opcion]()
+            elif opcion == '5':
+                print("\n¡Gracias por usar la calculadora de lógica proposicional!")
+                continuar = False
+            else:
+                print("\nOpción inválida. Por favor seleccione un número del 1 al 5.")
+                
+        except ValueError as e:
+            print(f"\nError: {e}")
+        except Exception as e:
+            print(f"\nError inesperado: {e}")
+        
+        if continuar:
+            input("\nPresione Enter para continuar...")
