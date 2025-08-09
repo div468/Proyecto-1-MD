@@ -113,7 +113,29 @@ def tautologia(expr):
 # Entrada: expresión 1 y expresión 2.
 # Salida: booleano.
 def equivalentes(expr1, expr2):
-    pass
+        #Se extraen las variables de cada expresion
+        variables_expr1 = extract_variables(expr1)
+        variables_expr2 = extract_variables(expr2)
+
+        #Si no son las mismas, automáticamente descartamos la equivalencia
+        if (set(variables_expr1) != set(variables_expr2)):
+            return False
+        #Se juntan todas las variables para tomar en cuenta todos los casos posibles
+        variables = sorted(list(set(variables_expr1 + variables_expr2)))
+        n = len(variables)
+
+        #Se calculan todas las combinaciones posibles
+        for i in range(2 ** n):
+            asignacion = {}
+            for j in range(n):
+                valor = (i // (2 ** j)) % 2 == 1
+                asignacion[variables[j]] = valor
+            
+            #Si las combinaciones y sus resultados no son iguales, no son logicamente equivalentes
+            if evaluar_expresion(expr1, asignacion) != evaluar_expresion(expr2, asignacion):
+                return False
+        
+        return True
 
 # Función: inferencia
 # Esta función determina los valores de verdad para una valuación de una proposición dada.
@@ -193,6 +215,48 @@ def procesar_inferencia():
     #Procesa la opción de realizar inferencia.
     pass
 
+
+#Validación de la entrada del usuario
+def validar_entrada(entrada):
+    # Validar que existan variables proposicionales
+    proposiciones = extract_variables(entrada)
+    if not proposiciones:
+        raise ValueError("La expresión no posee variables válidas (letras minúsculas a - z)")
+    
+    # Validar caracteres permitidos y estructura general
+    patron_valido = r'^([a-z]\s*|\b(and|or|not)\b\s*|\|implies\|\s*|\|iff\|\s*|\(|\)\s*)+$'
+    if not re.fullmatch(patron_valido, entrada.strip()):
+        raise ValueError("Sintaxis inválida: operadores mal formados o caracteres no permitidos")
+
+    # Validar paréntesis balanceados
+    stack = []
+    for i, caracter in enumerate(entrada):
+        if caracter == '(':
+            stack.append(i)
+        elif caracter == ')':
+            if not stack:
+                raise ValueError(f"Paréntesis de cierre ')' sin apertura en posición {i}")
+            stack.pop()
+    if stack:
+        raise ValueError(f"Paréntesis de apertura '(' sin cierre en posición {stack[-1]}")
+
+    # Validar estructura de operadores
+    estructuras_invalidas = [
+        r'^\s*(and|or|\|implies\||\|iff\|)',
+        r'(and|or|\|implies\||\|iff\|)\s*$',
+        r'(not\s+not\s+)',
+        r'(and|or|\|implies\||\|iff\|)\s*(and|or|\|implies\||\|iff\|)',
+        r'\(\s*(and|or|\|implies\||\|iff\|)',
+        r'(and|or|\|implies\||\|iff\|)\s*\)',
+        r'not(\s*[^a-z(])'
+    ]
+
+    for patron in estructuras_invalidas:
+        if re.search(patron, entrada):
+            raise ValueError("Estructura de operadores inválida")
+        
+    return True
+
 def mostrar_menu():
     # Muestra el menú principal del programa.
     print("\n--- Calculadora de Lógica Proposicional ---")
@@ -239,43 +303,3 @@ def main():
         if continuar:
             input("\nPresione Enter para continuar...")
 
-#Validación de la entrada del usuario
-def validar_entrada(entrada):
-    # Validar que existan variables proposicionales
-    proposiciones = extract_variables(entrada)
-    if not proposiciones:
-        raise ValueError("La expresión no posee variables válidas (letras minúsculas a - z)")
-    
-    # Validar caracteres permitidos y estructura general
-    patron_valido = r'^([a-z]\s*|\b(and|or|not)\b\s*|\|implies\|\s*|\|iff\|\s*|\(|\)\s*)+$'
-    if not re.fullmatch(patron_valido, entrada.strip()):
-        raise ValueError("Sintaxis inválida: operadores mal formados o caracteres no permitidos")
-
-    # Validar paréntesis balanceados
-    stack = []
-    for i, caracter in enumerate(entrada):
-        if caracter == '(':
-            stack.append(i)
-        elif caracter == ')':
-            if not stack:
-                raise ValueError(f"Paréntesis de cierre ')' sin apertura en posición {i}")
-            stack.pop()
-    if stack:
-        raise ValueError(f"Paréntesis de apertura '(' sin cierre en posición {stack[-1]}")
-
-    # Validar estructura de operadores
-    estructuras_invalidas = [
-        r'^\s*(and|or|\|implies\||\|iff\|)',
-        r'(and|or|\|implies\||\|iff\|)\s*$',
-        r'(not\s+not\s+)',
-        r'(and|or|\|implies\||\|iff\|)\s*(and|or|\|implies\||\|iff\|)',
-        r'\(\s*(and|or|\|implies\||\|iff\|)',
-        r'(and|or|\|implies\||\|iff\|)\s*\)',
-        r'not(\s*[^a-z(])'
-    ]
-
-    for patron in estructuras_invalidas:
-        if re.search(patron, entrada):
-            raise ValueError("Estructura de operadores inválida")
-        
-    return True
