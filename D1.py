@@ -208,8 +208,17 @@ def procesar_tautologia():
     pass
 
 def procesar_equivalencias():
-    #Procesa la opción de verificar equivalencias.
-    pass
+    expr1 = input("Ingrese la primera expresión")
+    expr2 = input("Ingrese la segunda expresión")
+
+    if (validar_entrada(expr1) and validar_entrada(expr2) != True):
+        print("Una de las expresiones ingresadas no es válida, inténtelo de nuevo")
+    else:
+        equivalencia = equivalentes(expr1, expr2)
+        if equivalencia == True:
+            print("Las funciones son lógicamente equivalentes")
+        else :
+            print("Las funciones no son lógicamente equivalentes")
 
 def procesar_inferencia():
     #Procesa la opción de realizar inferencia.
