@@ -240,31 +240,30 @@ def main():
             input("\nPresione Enter para continuar...")
 
 #Validación de la entrada del usuario
-def validar_entrada(entrada) :
-
-    #Se valida que existan proposiciones en la entrada
+def validar_entrada(entrada):
+    # Validar que existan variables proposicionales
     proposiciones = extract_variables(entrada)
     if not proposiciones:
         raise ValueError("La expresión no posee variables válidas (letras minúsculas a - z)")
     
-    #Se valida que únicamente los operadores validos se encuentren en la entrada
-    operadores_permitidos = r'^[a-z\s()|andornot|iff||implies|]+$'
-    if not re.fullmatch(operadores_permitidos,entrada):
-        raise ValueError("Ingresó operadores lógicos no pérmitidos")
+    # Validar caracteres permitidos y estructura general
+    patron_valido = r'^([a-z]\s*|\b(and|or|not)\b\s*|\|implies\|\s*|\|iff\|\s*|\(|\)\s*)+$'
+    if not re.fullmatch(patron_valido, entrada.strip()):
+        raise ValueError("Sintaxis inválida: operadores mal formados o caracteres no permitidos")
 
-    #Uso de stack para validar el orden de los paréntesis
+    # Validar paréntesis balanceados
     stack = []
-    for caracter in enumerate(entrada):
-        if caracter == "(":
-            stack.append(caracter)
-        elif caracter == ")":
+    for i, caracter in enumerate(entrada):
+        if caracter == '(':
+            stack.append(i)
+        elif caracter == ')':
             if not stack:
-                raise ValueError("Ingresó un paréntesis de cierre sin un paréntesis de apertura anteriormente")
+                raise ValueError(f"Paréntesis de cierre ')' sin apertura en posición {i}")
             stack.pop()
     if stack:
-        raise ValueError("Ingresó un paréntesis de apertura sin unn paréntesis de cierre posterior")
-    
-    #Se verifica que la sintaxis siga un orden adecuado
+        raise ValueError(f"Paréntesis de apertura '(' sin cierre en posición {stack[-1]}")
+
+    # Validar estructura de operadores
     estructuras_invalidas = [
         r'^\s*(and|or|\|implies\||\|iff\|)',
         r'(and|or|\|implies\||\|iff\|)\s*$',
@@ -275,8 +274,8 @@ def validar_entrada(entrada) :
         r'not(\s*[^a-z(])'
     ]
 
-    for estructura in estructuras_invalidas:
-        if re.search(estructura, entrada):
-            raise ValueError("Ingresó una estructura de operación inválida")
+    for patron in estructuras_invalidas:
+        if re.search(patron, entrada):
+            raise ValueError("Estructura de operadores inválida")
         
     return True
