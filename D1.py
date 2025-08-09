@@ -59,9 +59,45 @@ def extract_variables(expression):
 # Esta función calcula una tabla de verdad para una expresión dada.
 # Entrada: expresión.
 # Salida: tabla de verdad como una lista de listas.
-
 def tabla_verdad(expr):
-    pass
+    """
+    Genera una tabla de verdad para una expresión lógica dada.
+    
+    Args:
+        expr (str): Expresión lógica con variables minúsculas (a-z)
+        
+    Returns:
+        list[list[bool]]: Tabla de verdad donde cada fila contiene los valores de las variables seguidos del resultado
+    """
+    try:
+        # Extraer variables de la expresión
+        variables = extract_variables(expr)
+        n = len(variables)
+        
+        # Generar todas las combinaciones posibles de valores de verdad
+        tabla = []
+        for i in range(2**n):
+            # Generar combinación binaria para esta fila
+            valores = []
+            for j in range(n):
+                # Extraer el j-ésimo bit (de derecha a izquierda)
+                bit = (i >> (n - 1 - j)) & 1
+                valores.append(bool(bit))
+            
+            # Crear diccionario de asignaciones para evaluar la expresión
+            asignaciones = dict(zip(variables, valores))
+            
+            # Evaluar la expresión con estas asignaciones
+            resultado = evaluar_expresion(expr, asignaciones)
+            
+            # Agregar fila a la tabla (valores + resultado)
+            fila = valores + [resultado]
+            tabla.append(fila)
+            
+        return tabla
+        
+    except Exception as e:
+        raise ValueError(f"Error al procesar la expresión: {e}")
 
 # Función: tautologia
 # Esta función determina si la expresión es una tautología, devuelve True;
@@ -100,11 +136,50 @@ def evaluar_expresion(expr, asignaciones):
     Returns:
         bool: Resultado de evaluar la expresión
     """
-    pass
+    # Preparar la expresión para evaluación
+    expr_eval = expr
+    
+    # Reemplazar operadores personalizados
+    expr_eval = expr_eval.replace('|implies|', '|implies|')
+    expr_eval = expr_eval.replace('|iff|', '|iff|')
+    
+    # Crear contexto de evaluación con variables y operadores
+    contexto = asignaciones.copy()
+    contexto['implies'] = implies
+    contexto['iff'] = iff
+    
+    try:
+        # Evaluar la expresión
+        resultado = eval(expr_eval, {"__builtins__": {}}, contexto)
+        return bool(resultado)
+    except Exception as e:
+        raise ValueError(f"Error al evaluar expresión '{expr}': {e}")
+
 
 def procesar_tabla_verdad():
-    #Procesa la opción de tabla de verdad.
-    pass
+    """Procesa la opción de tabla de verdad."""
+    expr = input("Ingrese la expresión para tabla de verdad: ").strip()
+    tabla = tabla_verdad(expr)
+    variables = extract_variables(expr)
+    
+    print(f"\nTabla de verdad para: {expr}")
+    print(f"Variables: {variables}")
+    print("-" * (len(variables) * 8 + 15))
+    
+    # Encabezados
+    header = ""
+    for var in variables:
+        header += f"{var:>6} "
+    header += f"{'Resultado':>10}"
+    print(header)
+    print("-" * (len(variables) * 8 + 15))
+    
+    # Filas de la tabla
+    for fila in tabla:
+        linea = ""
+        for valor in fila:
+            linea += f"{str(valor):>6} "
+        print(linea)
 
 def procesar_tautologia():
     #Procesa la opción de verificar tautología.
