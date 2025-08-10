@@ -183,9 +183,58 @@ def inferencia(expr):
 
 ############## FUNCIONES AUXILIARES ##############
 
+# Función alternativa más robusta para evaluar expresiones
+def evaluar_expresion_alternativa(expr, asignaciones):
+    """
+    Versión alternativa más robusta para evaluar expresiones lógicas.
+    """
+    # Crear una copia de la expresión para modificar
+    expr_eval = expr.strip()
+    
+    # Primero, reemplazar todas las variables con sus valores
+    for variable, valor in asignaciones.items():
+        # Usar word boundaries para evitar reemplazos parciales
+        expr_eval = re.sub(r'\b' + variable + r'\b', str(valor), expr_eval)
+    
+    # Ahora manejar los operadores personalizados paso a paso
+    # Procesar |implies| - convertir a operación lógica básica
+    while '|implies|' in expr_eval:
+        # Buscar patrones de la forma (expr1) |implies| (expr2)
+        match = re.search(r'([^|]+)\s*\|implies\|\s*([^|]+)', expr_eval)
+        if match:
+            left = match.group(1).strip()
+            right = match.group(2).strip()
+            # p |implies| q equivale a (not p or q)
+            replacement = f"(not ({left}) or ({right}))"
+            expr_eval = expr_eval[:match.start()] + replacement + expr_eval[match.end():]
+        else:
+            break
+    
+    # Procesar |iff| - convertir a operación lógica básica  
+    while '|iff|' in expr_eval:
+        match = re.search(r'([^|]+)\s*\|iff\|\s*([^|]+)', expr_eval)
+        if match:
+            left = match.group(1).strip()
+            right = match.group(2).strip()
+            # p |iff| q equivale a ((p and q) or (not p and not q))
+            replacement = f"(({left}) and ({right})) or ((not ({left})) and (not ({right})))"
+            expr_eval = expr_eval[:match.start()] + replacement + expr_eval[match.end():]
+        else:
+            break
+    
+    try:
+        # Evaluar la expresión resultante
+        resultado = eval(expr_eval, {"__builtins__": {}}, {})
+        return bool(resultado)
+    except Exception as e:
+        raise ValueError(f"Error al evaluar expresión '{expr}': {e}")
+
+
+# Función mejorada que combina ambos enfoques
 def evaluar_expresion(expr, asignaciones):
     """
     Evalúa una expresión lógica con asignaciones de variables dadas.
+    Usa un enfoque híbrido para manejar operadores personalizados.
     
     Args:
         expr (str): Expresión lógica
@@ -194,25 +243,22 @@ def evaluar_expresion(expr, asignaciones):
     Returns:
         bool: Resultado de evaluar la expresión
     """
-    # Preparar la expresión para evaluación
-    expr_eval = expr
-    
-    # Reemplazar operadores personalizados
-    expr_eval = expr_eval.replace('|implies|', '|implies|')
-    expr_eval = expr_eval.replace('|iff|', '|iff|')
-    
-    # Crear contexto de evaluación con variables y operadores
-    contexto = asignaciones.copy()
-    contexto['implies'] = implies
-    contexto['iff'] = iff
-    
     try:
-        # Evaluar la expresión
+        # Método 1: Intentar con operadores infijos
+        expr_eval = expr
+        contexto = asignaciones.copy()
+        contexto['implies'] = implies
+        contexto['iff'] = iff
+        
         resultado = eval(expr_eval, {"__builtins__": {}}, contexto)
         return bool(resultado)
-    except Exception as e:
-        raise ValueError(f"Error al evaluar expresión '{expr}': {e}")
-
+        
+    except:
+        # Método 2: Si falla, usar conversión manual
+        try:
+            return evaluar_expresion_alternativa(expr, asignaciones)
+        except Exception as e:
+            raise ValueError(f"Error al evaluar expresión '{expr}': {e}")
 
 def procesar_tabla_verdad():
     """Procesa la opción de tabla de verdad."""
