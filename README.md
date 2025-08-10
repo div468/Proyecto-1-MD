@@ -25,3 +25,13 @@ Herramienta desarrollada con Python para la implementación de fundamentos bási
 
 ## Ejemplo tabla_verdad(expr)
 ![tabla_verdad()](https://github.com/user-attachments/assets/005be36a-0173-462c-82a3-e69aba73ecf4)
+
+## Ejemplo tautologia(expr)
+![tautologia()](https://github.com/user-attachments/assets/a897dd25-531e-4979-97fa-269c29e2b5ac)
+
+## Ejemplo equivalentes(expr1, expr2)
+![equivalentes()](https://github.com/user-attachments/assets/23d9b4f5-8e0d-4dbf-8c7e-62febad50845)
+
+## Ejemplo inferencia(expr)
+
+
