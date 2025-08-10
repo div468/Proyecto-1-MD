@@ -105,7 +105,43 @@ def tabla_verdad(expr):
 # Entrada: expresión.
 # Salida: booleano.
 def tautologia(expr):
-    pass
+    """
+    Determina si una expresión lógica es una tautología.
+    
+    Args:
+        expr (str): Expresión lógica con variables minúsculas (a-z)
+        
+    Returns:
+        bool: True si la expresión es una tautología, False en caso contrario
+    """
+    try:
+        # Extraer variables de la expresión
+        variables = extract_variables(expr)
+        n = len(variables)
+        
+        # Generar todas las combinaciones posibles de valores de verdad
+        for i in range(2**n):
+            # Generar combinación binaria para esta fila
+            asignaciones = {}
+            for j in range(n):
+                # Extraer el j-ésimo bit (de derecha a izquierda)
+                bit = (i >> (n - 1 - j)) & 1
+                asignaciones[variables[j]] = bool(bit)
+            
+            # Evaluar la expresión con estas asignaciones
+            resultado = evaluar_expresion(expr, asignaciones)
+            
+            # Si encontramos al menos un caso donde la expresión es False,
+            # entonces no es una tautología
+            if not resultado:
+                return False
+        
+        # Si llegamos aquí, todas las evaluaciones fueron True
+        return True
+        
+    except Exception as e:
+        raise ValueError(f"Error al procesar la expresión: {e}")
+
 
 # Función: equivalentes
 # Esta función determina si expr1 es equivalente a expr2, devuelve True;
@@ -204,8 +240,28 @@ def procesar_tabla_verdad():
         print(linea)
 
 def procesar_tautologia():
-    #Procesa la opción de verificar tautología.
-    pass
+    """Procesa la opción de verificar tautología."""
+    try:
+        expr = input("Ingrese la expresión para verificar tautología: ").strip()
+        
+        # Validar la entrada
+        if not validar_entrada(expr):
+            print("La expresión ingresada no es válida, inténtelo de nuevo")
+            return
+        
+        # Verificar si es tautología
+        es_tautologia = tautologia(expr)
+        
+        print(f"\nExpresión: {expr}")
+        if es_tautologia:
+            print("✓ La expresión ES una tautología (siempre verdadera)")
+        else:
+            print("✗ La expresión NO es una tautología")
+            
+    except ValueError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"Error inesperado: {e}")
 
 def procesar_equivalencias():
     expr1 = input("Ingrese la primera expresión")
@@ -312,3 +368,4 @@ def main():
         if continuar:
             input("\nPresione Enter para continuar...")
 
+main()
