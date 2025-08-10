@@ -35,3 +35,66 @@ Herramienta desarrollada con Python para la implementación de fundamentos bási
 ## Ejemplo inferencia(expr)
 
 
+## 📃 Otros ejemplos para probar
+
+### 📊 Tabla de verdad
+```bash
+(a and b) |implies| (c or d)
+```
+```bash
+((a or b) and c) |iff| (a and c) or (b and c)
+```
+```bash
+not ((a and b) or (c and not d))
+```
+
+### ✅ Tautologías
+```bash
+(a and b) |implies| a
+```
+```bash
+not (a and not a)
+```
+```bash
+(a |implies| (b |implies| c)) |iff| ((a and b) |implies| c)
+```
+```bash
+((a |implies| b) and (b |implies| c)) |implies| (a |implies| c)
+```
+
+### 🟰 Proposiciones equivalentes
+```bash
+p |implies| q ≡ not p or q
+```
+```bash
+not (a or b) ≡ not a and not b
+```
+```bash
+a |iff| b ≡ (a |implies| b) and (b |implies| a)
+```
+```bash
+a and (b or c) ≡ (a and b) or (a and c)
+```
+
+### 🪄 Inferencias
+```bash
+(a |implies| b) and (b |implies| c) = 1
+```
+```bash
+not ((a and b) or (c and d)) = 0
+```
+```bash
+(a and b) and not (a and b) = 1
+```
+
+# 📥 Instalación
+
+Clonar el repositorio:
+```bash
+git clone https://github.com/div468/Proyecto-1-MD.git
+```
+
+Ejecutar el programa:
+```bash
+python D1.py  
+```
