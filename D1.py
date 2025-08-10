@@ -264,8 +264,8 @@ def procesar_tautologia():
         print(f"Error inesperado: {e}")
 
 def procesar_equivalencias():
-    expr1 = input("Ingrese la primera expresión")
-    expr2 = input("Ingrese la segunda expresión")
+    expr1 = input("Ingrese la primera expresión: ")
+    expr2 = input("Ingrese la segunda expresión: ")
 
     if (validar_entrada(expr1) and validar_entrada(expr2) != True):
         print("Una de las expresiones ingresadas no es válida, inténtelo de nuevo")
@@ -313,12 +313,21 @@ def validar_entrada(entrada):
         r'(and|or|\|implies\||\|iff\|)\s*(and|or|\|implies\||\|iff\|)',
         r'\(\s*(and|or|\|implies\||\|iff\|)',
         r'(and|or|\|implies\||\|iff\|)\s*\)',
-        r'not(\s*[^a-z(])'
+        
     ]
 
     for patron in estructuras_invalidas:
         if re.search(patron, entrada):
             raise ValueError("Estructura de operadores inválida")
+    
+    # Validaciones adicionales para 'not'
+    # Verificar que 'not' siempre esté seguido por una variable o paréntesis de apertura
+    if re.search(r'\bnot\s+(?![a-z(])', entrada):
+        raise ValueError("El operador 'not' debe estar seguido por una variable o paréntesis de apertura")
+    
+    # Verificar que no haya múltiples 'not' consecutivos sin paréntesis
+    if re.search(r'\bnot\s+not\s+(?![a-z(])', entrada):
+        raise ValueError("Múltiples operadores 'not' consecutivos requieren paréntesis")
         
     return True
 
