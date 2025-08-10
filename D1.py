@@ -355,7 +355,6 @@ def validar_entrada(entrada):
     estructuras_invalidas = [
         r'^\s*(and|or|\|implies\||\|iff\|)',
         r'(and|or|\|implies\||\|iff\|)\s*$',
-        r'(not\s+not\s+)',
         r'(and|or|\|implies\||\|iff\|)\s*(and|or|\|implies\||\|iff\|)',
         r'\(\s*(and|or|\|implies\||\|iff\|)',
         r'(and|or|\|implies\||\|iff\|)\s*\)',
