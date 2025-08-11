@@ -33,7 +33,7 @@ Herramienta desarrollada con Python para la implementación de fundamentos bási
 ![equivalentes()](https://github.com/user-attachments/assets/23d9b4f5-8e0d-4dbf-8c7e-62febad50845)
 
 ## Ejemplo inferencia(expr)
-
+![inferencia()](https://github.com/user-attachments/assets/72cc0094-92a5-4774-bfd9-663879067c0b)
 
 ## 📃 Otros ejemplos para probar
 
