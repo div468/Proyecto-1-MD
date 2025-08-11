@@ -179,7 +179,45 @@ def equivalentes(expr1, expr2):
 # Salida: lista de listas.
 
 def inferencia(expr):
-    pass
+    """
+    Genera una tabla  que contiene los valores de verdad para una valuación de una proposición dada.
+    
+    Args:
+        expr (str): Expresión lógica con variables minúsculas (a-z) seguida de un valor de verdad
+        
+    Returns:
+        list[list[bool]]: Lista de asignaciones que cumplen la condición
+    """
+    try:
+        # Separar la expresión y el valor esperado
+        proposicion, valor_str = expr.split("=")
+        proposicion = proposicion.strip()
+        valor_str = valor_str.strip()
+        
+        valor_objetivo = True if valor_str == "1" else False
+        
+        # Extraer variables y generar combinaciones
+        variables = extract_variables(proposicion)
+        n = len(variables)
+        
+        soluciones = []
+        for i in range(2 ** n):
+            asignacion = {}
+            for j in range(n):
+                bit = (i >> (n - 1 - j)) & 1
+                asignacion[variables[j]] = bool(bit)
+            
+            # Evaluar la proposición
+            resultado = evaluar_expresion(proposicion, asignacion)
+            
+            # Si coincide con el valor objetivo, guardar la asignación
+            if resultado == valor_objetivo:
+                soluciones.append([asignacion[var] for var in variables])
+        
+        return soluciones
+    
+    except Exception as e:
+        raise ValueError(f"Error en inferencia: {e}")
 
 ############## FUNCIONES AUXILIARES ##############
 
@@ -323,8 +361,45 @@ def procesar_equivalencias():
             print("Las funciones no son lógicamente equivalentes")
 
 def procesar_inferencia():
-    #Procesa la opción de realizar inferencia.
-    pass
+    """Procesa la opción de realizar inferencia."""
+    seguir = True
+    while seguir:
+        try:
+            expr = input("Ingrese la proposición compuesta con el símbolo '=' y un valor de verdad: ").strip()
+
+            # Validar formato básico
+            if "=" not in expr:
+                print("Error: La expresión debe contener '=' seguido de un valor de verdad")
+                continue
+            
+            # Separar proposición y valor
+            proposicion, valor_str = expr.split("=")
+            proposicion = proposicion.strip()
+            valor_str = valor_str.strip()
+            
+            if valor_str not in ("0", "1"):
+                print("Error: El valor después de '=' debe ser 0 o 1")
+                continue
+            
+            # Validar proposición (sin el = valor)
+            if not validar_entrada(proposicion):
+                print("La proposición ingresada no es válida.")
+                continue
+            
+            # Calcular inferencia
+            soluciones = inferencia(expr)
+            variables = extract_variables(proposicion)
+            
+            print(f"\nVariables: {variables}")
+            print(f"Resultados que cumplen {expr}:")
+            print(soluciones)
+            seguir = False
+            break
+
+        except ValueError as e:
+            print(f"Error: {e}")
+        except Exception as e:
+            print(f"Error inesperado: {e}")
 
 
 #Validación de la entrada del usuario
